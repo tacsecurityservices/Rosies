@@ -487,7 +487,7 @@
             const orderDetails = cartItems.map(item => `${item.quantity}x ${item.name} (R${(item.price * item.quantity).toFixed(2)})`).join('\n');
             const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
             
-            const emailTo = 'rosey.services@example.com'; // Placeholder email for the store owner
+            const emailTo = 'rosies@safrica.com'; // Placeholder email for the store owner
             const emailSubject = 'New Order from Rosie\'s Online Services';
             const emailBody = `Hello Rosie's Team,\n\nI would like to place the following order:\n\n--- Customer Information ---\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n--- Order Details ---\n${orderDetails}\n\nTotal: R${cartTotal.toFixed(2)}\n\nPlease process my order. Thank you!`;
             
