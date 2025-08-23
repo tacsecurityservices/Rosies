@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="discription" contnt="online shopping, Rosie's, free shopping, take a lot, Shein, Temu.">
+    <title>Rosie's</title>
+    <!-- Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+        /* Custom scrollbar for webkit browsers */
+        .cart-modal::-webkit-scrollbar, .reviews-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .cart-modal::-webkit-scrollbar-track, .reviews-container::-webkit-scrollbar-track {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .cart-modal::-webkit-scrollbar-thumb, .reviews-container::-webkit-scrollbar-thumb {
+            background: #9ca3af;
+            border-radius: 10px;
+        }
+        .cart-modal::-webkit-scrollbar-thumb:hover, .reviews-container::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        /* Smooth animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        /* Toast animation */
+        @keyframes toast-slide-in {
+            from { opacity: 0; transform: translateY(100%); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes toast-slide-out {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(100%); }
+        }
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .product-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+            .hero-section {
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+            }
+        }
+        /* Line clamp utility */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+    <!-- Favicon links to display the logo in the browser tab -->
+    <!-- This is the main favicon, using the store SVG icon as a data URI -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7'/%3E%3Cpath d='M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8'/%3E%3Cpath d='M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4'/%3E%3Cpath d='M2 7h20'/%3E%3C/svg%3E">
+    <!-- A fallback for older browsers, using a placeholder image -->
+    <link rel="shortcut icon" href="https://placehold.co/16x16/2563EB/ffffff?text=R">
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Header section with logo and cart button -->
+    <header class="bg-white shadow-md p-3 sm:p-4 flex justify-between items-center fixed w-full top-0 z-40 border-b border-gray-200">
+        <div id="home-button" class="flex items-center space-x-2 cursor-pointer transition-colors duration-200 hover:text-blue-600" role="link" aria-label="Go to homepage">
+            <div class="text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-store">
+                    <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/>
+                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                    <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/>
+                    <path d="M2 7h20"/>
+                </svg>
+            </div>
+            <h1 class="text-lg sm:text-2xl font-bold text-gray-800">Rosie's</h1>
+        </div>
+        <div class="flex items-center space-x-2 sm:space-x-4">
+            <span id="user-info" class="text-xs text-gray-500 hidden sm:block"></span>
+            <button id="cart-button" class="relative bg-blue-600 text-white rounded-full p-2 sm:p-3 transition-all duration-200 hover:bg-blue-700 active:scale-95 shadow-lg" aria-label="View shopping cart">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="8" cy="21" r="1"/>
+                    <circle cx="19" cy="21" r="1"/>
+                    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                </svg>
+                <span id="cart-item-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center hidden"></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main content area -->
+    <main id="app-container" class="mt-16 sm:mt-20"></main>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cart-modal-backdrop" class="fixed inset-0 bg-black bg-opacity-50 flex justify-end z-50 hidden">
+        <div id="cart-modal" class="bg-white w-full sm:w-96 md:w-[28rem] h-full overflow-y-auto shadow-2xl relative transform translate-x-full transition-transform duration-300 ease-in-out cart-modal">
+            <!-- Cart content will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-container" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] hidden">
+        <div id="toast" class="bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg opacity-0 transform translate-y-full transition-all duration-300 flex items-center space-x-2">
+            <svg class="h-5 w-5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-8.72"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const products = [
+            {
+                id: 1,
+                name: 'Poedagar - Marine Stainless Steel Luxury Male  Watch',
+                description: 'Timeless Elegance Crafted from Stainless Steel and Driven by Quarttz Mechanics',
+                price: 1699.99,
+                category: 'Electronics',
+                imageUrl: 'https://m.media-amazon.com/images/I/611ikWT5NSL._AC_SX679_.jpg',
+                longDescription: 'Male Wrist Watch Imported Movement, high quality quartz movement and battery provide accurate time keeping,Solid Durable and comfortable stainless steel band fits to daily wear,scratch proof mineral glass dial.',
+                galleryImages: [
+                    'https://m.media-amazon.com/images/I/61O9uT71ZfL._AC_SX679_.jpg',
+                    'https://m.media-amazon.com/images/I/51Go7r9bJHL._AC_.jpg', // Example of a different image
+                    'https://m.media-amazon.com/images/I/71onqnA1q-L._AC_SX679_.jpg'
+                ]
+            },
+             {
+                id: 2,
+                name: 'E T EASYTAO Smart Watch Fitness Tracker for Women Pink-support Bluetooth',
+                description: '1 ATM Waterproof/ GPS Motion Recording/5.2 Bluetooth /Support Android 5.0 & Apple IOS9.0 above',
+                price: 699.99,
+                category: 'Electronics',
+                imageUrl: 'https://m.media-amazon.com/images/I/71s81BdMykL._AC_SL1500_.jpg',
+                longDescription: 'Bluetooth Calling and Smart Notifications: The smart watches adopt bluetooth 5.3 version for a faster and more stable connection between your fitness watch and smartphone. With the built-in microphone and Hi-Fi speaker , you can receive and make clear calls directly from your watch. Smart watch for men also supports information reminders and social media notifications (WhatsApp, Facebook, Instagram, Twitter, etc). All notifications will be displayed on your wrist through vibration.',
+                galleryImages: [
+                    'https://m.media-amazon.com/images/I/71s81BdMykL._AC_SL1500_.jpg',
+                    'https://m.media-amazon.com/images/I/71dI0rOEaYL._AC_SL1500_.jpg', // Example of a different image
+                    'https://m.media-amazon.com/images/I/71JgIIVKFHL._AC_SL1500_.jpg'
+                ]
+            },
+            {
+                id: 3,
+                name: 'Boss - Kids GPS Tracker Smart Watch - SOS, Alarm Clock, Camera, School Mode',
+                description: 'SOS Button - Locate Your Child Anywhere ',
+                price: 599.99,
+                category: 'Electronics',
+                imageUrl: 'https://images4-cdn.auctionmobility.com/is3/auctionmobility-static4/hKpx-4-YU7/4-AX3XSX/34.png%20?%20maxwidth=1600&maxheight=1600&_gl=1*cdtamv*_gcl_au*MTA2MDE0MTQyNy4xNzU1OTU4NDM4',
+                longDescription: 'HD VOICE & VIDEO CALLS: TickTalk 5 is a standalone 4G LTE kids smartwatch that supports voice and video calls through WiFi or cellular data. Equipped with a 5MP front camera, TickTalk 5 provides smooth, HD-quality voice and video calls. The watch features quick-dial buttons for 911 and other emergency contacts, instantly notifying parents with the location of emergency calls for added peace of mind.',
+                galleryImages: [
+                    'https://images4-cdn.auctionmobility.com/is3/auctionmobility-static4/hKpx-4-YU7/4-AX3XSX/34.png%20?%20maxwidth=1600&maxheight=1600&_gl=1*cdtamv*_gcl_au*MTA2MDE0MTQyNy4xNzU1OTU4NDM4',
+                    'https://m.media-amazon.com/images/I/71bV-ZPRMsL._AC_SX679_.jpg', // Example of a different image
+                    'https://m.media-amazon.com/images/I/71ayZ1V3uzL._AC_SL1500_.jpg'
+                ]
+            },
+             {
+                id: 4,
+                name: 'Connex 14 Celeron 4/128SSD All I Need Bundle',
+                description: 'Fast N4500 2.8GHz Boost | Built for work and ready for fun | Win 11',
+                price: 3999.99,
+                category: 'Electronics',
+                imageUrl: 'https://www.okfurniture.co.za/media/catalog/product/cache/81c0491466fe452ec9830c3d67dc2574/2/1/215834.jpg',
+                longDescription: 'Discover the perfect blend of style and functionality with the Connex 14 Celeron 4/128SSD Ladies Bundle. Designed for modern women on the go, this sleek device delivers robust performance in a compact form. With a vibrant 14-inch display, enjoy clear visuals whether you are working or streaming your favorite shows.',
+                galleryImages: [
+                    'https://www.okfurniture.co.za/media/catalog/product/cache/81c0491466fe452ec9830c3d67dc2574/2/1/215834.jpg',
+                    'https://shopping4africa.com/cdn/shop/files/connex-14-inch-celeron-4128ssd-ladies-bundle-sl128hlb-677917.png?v=1748501266&width=1000', // Example of a different image
+                    'https://shopping4africa.com/cdn/shop/files/connex-14-inch-celeron-4128ssd-ladies-bundle-sl128hlb-734633.png?v=1748501266&width=1000'
+                ]
+            },
+            {
+                id: 5,
+                name: 'HP 250 G9 -N4500 256GB SSD 8GB RAM 15.6-inch FHD Laptop',
+                description: 'HP TRUE VISION 720P HD CAMERA WITH INTEG',
+                price: 5499.99,
+                category: 'Electronics',
+                imageUrl: 'https://thefoschini.vtexassets.com/arquivos/ids/204422018-1200-1600?v=638888158886800000&width=1200&height=1600&aspect=true',
+                longDescription: 'HP Notebook 250 G9 Celeron 8GB 1D DDR4 2933 256GB PCIe NVMe SSD 15.6 FHD AG SVA 250 W11Home64SgleLAfricaMarketPP kbd TP Imagepad with numeric keypad AC 2x2+BT5 Asteroid Silver with HD Webcam + TNR ID 1 Year Carry in',
+                galleryImages: [
+                    'https://thefoschini.vtexassets.com/arquivos/ids/204422018-1200-1600?v=638888158886800000&width=1200&height=1600&aspect=true',
+                    'https://thefoschini.vtexassets.com/arquivos/ids/204422038-1200-1600?v=638888158897130000&width=1200&height=1600&aspect=true', // Example of a different image
+                    'https://www.firstshop.co.za/cdn/shop/files/7n0m6es-traditional-laptops-42973934846116.jpg?v=1687783798&width=675'
+                ]
+            },
+            {
+                id: 6,
+                name: 'Silver Crest XXL Digital Air Fryer with Nesting Tongs Set',
+                description: 'Great tasting food with up to 90% less fat, thanks to Rapid Air technology.',
+                price: 699,
+                category: 'Kitchen',
+                imageUrl: 'https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/air-fryer/6/a/e/8-box-jd689b-black-silver-crest-original-imah69v9r3znycbf.jpeg?q=70',
+                longDescription: 'New Design 8L Smart Silver Crest Air Fryer Stylish Design with this 8L Air Fryer let Start a Healthy Lifestyle. With Digital Control and automatic power-off can make this Air Fryer better than others in the market. Features: 8L large function preset menu, real large capacity of 5 liters Pot, a whole chicken can be roasted of 3 pounds, chicken wings can be roasted. use Air instead of hot oil, no fryer, Healthy lifestyle style. 1400W High firepower Can save a lot of electricity, 13-In-1 Use 13 cooking functions, which include 11 presets, Preheat and Keep Warm. Non-Stick & Easy to Clean Removable, dishwasher-safe basket and nonstick surface make cleaning simple and easy. Loop-type heating, memory when the basket is powered off. Organic non-stick pan coating, non-stick material is easy to clean. With a special design, it saves 25% space. With its tiny and smart design This is Silver Crest Air Fryer with RATED VOLTAGE:220,',
+                galleryImages: [
+                    'https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/air-fryer/6/a/e/8-box-jd689b-black-silver-crest-original-imah69v9r3znycbf.jpeg?q=70',
+                    'https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/air-fryer/f/j/p/8-box-jd689b-black-silver-crest-original-imah69v9hvuszucu.jpeg?q=70',
+                    'https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/air-fryer/r/o/c/8-box-jd689b-black-silver-crest-original-imah69v9tt2hymyy.jpeg?q=70'
+                ]
+            },
+            {
+                id: 7,
+                name: '2 Layer Steel Tableware & Dish Rack with Cups and Cutlery Holders',
+                description: 'Casey 2 Layer 43cm Stainless Steel Large Dish Rack - Made Of High Quality Durable Stainless Steel',
+                price: 499.99,
+                category: 'Kitchen',
+                imageUrl: 'https://valotronics.co.za/uploads/suppliers/images/supplier3/CSY_WL264_43.jpg',
+                longDescription: 'Bring a touch of modern luxury to your bedroom with the Marlowe Headboard, featuring soft velvet upholstery and a refined, minimalist design. Lightweight yet durable, it’s the perfect blend of style and practicality.',
+                galleryImages: [
+                    'https://valotronics.co.za/uploads/suppliers/images/supplier3/CSY_WL264_43.jpg',
+                    'https://3pmedia.leroymerlin.co.za/SOURCE/4f240feaae614af9bfba47b9ff31463f?tr=if-iar_ne_1,w-566,h-566,cm-pad_resize,if-else,w-566,h-566,if-end',
+                    
+                ]
+            },
+            {
+                id: 8,
+                name: 'Velvet Paneled Tufted Headboard- Charcoal',
+                description: 'Transform your room with the Marlowe Headboard in South Africa, combining style, comfort, and durability for the ultimate bedroom upgrade.',
+                price: 1499.99,
+                category: 'Bedroom',
+                imageUrl: 'https://bamboomattresses.co.za/cdn/shop/files/Marlowe-4.jpg?v=1755290207&width=840',
+                longDescription: 'This comprehensive 8-piece set includes a chef knife, bread knife, paring knife, and more, all housed in a beautiful wooden block. The high-carbon stainless steel blades are precision-honed for superior cutting performance and long-lasting sharpness. The ergonomic handles provide a comfortable and secure grip for all your culinary tasks.',
+                galleryImages: [
+                    'https://bamboomattresses.co.za/cdn/shop/files/Marlowe-4.jpg?v=1755290207&width=840',
+                    'https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/bed/3/o/s/queen-grey-velvet-no-carton-7-no-grey-25-160-1-scarlet-velvet-original-imah4tvz5dgfhhux.jpeg?q=70',
+                    'https://www.makro.co.za/asset/rukmini/fccp/832/832/ng-fkpublic-ui-user-fbbe/bed/3/o/s/queen-grey-velvet-no-carton-7-no-grey-25-160-1-scarlet-velvet-original-imah4tvz5dgfhhux.jpeg?q=70'
+                ]
+            },
+            {
+                id: 9,
+                name: 'Nook Bedside Pedestal - White',
+                description: 'The Nook Bedside Pedestal Tables offer a sleek, minimalist design perfect for any modern bedroom',
+                price: 1499.99,
+                category: 'Bedroom',
+                imageUrl: 'https://mkwinkel.co.za/wp-content/uploads/2025/05/61VVg18Yx_L._AC_SL1001-768x768.jpg',
+                longDescription: 'A superb bedside Table will add such a great atmosphere to your room. with its simple design and great features, there is no reason you should not have this in your room. You can store your everyday items in the pull-out drawer, sit your lamp on the top area, and store all your books in the book storage section. super simple design and easy to assemble',
+                galleryImages: [
+                    'https://mkwinkel.co.za/wp-content/uploads/2025/05/61P3iuJQdxL._AC_SL1001-768x768.jpg',
+                    'https://mkwinkel.co.za/wp-content/uploads/2025/05/61H-hncfE6L._AC_SL1001.jpg',
+                    'https://mkwinkel.co.za/wp-content/uploads/2025/05/WhatsAppImage2024-11-13at2.37.33PM.jpg'
+                ]
+            },
+            {
+                id: 10,
+                name: '4 Pack Pillow Covers Pillow Protectors Sofa Cusion Covers Linen 45x45cm',
+                description: 'The pillowcases are available in different sizes and can therefore be used for most pillows (the pillows are not included).',
+                price: 399.99,
+                category: 'Bedroom',
+                imageUrl: 'https://img.fruugo.com/product/4/72/1830585724_max.jpg',
+                longDescription: 'The standard size 45x45 cm of the decorative pillowcasesThe invisible zipper gives your pillows an elegant look and makes it easy to cover your pillows.',
+                galleryImages: [
+                    'https://img.fruugo.com/product/4/72/1830585724_max.jpg',
+                    'https://www.sweetpeas.co.za/cdn/shop/products/8EE45C8F-EFF5-4809-AFB5-3978DDE700EE_360x.jpg?v=1617907358',
+                    'https://www.sweetpeas.co.za/cdn/shop/products/image4-1_900x.png?v=1617907358'
+                ]
+            }
+        ];
+
+        // Get unique categories from products for filter buttons
+        const categories = ['All', ...new Set(products.map(product => product.category))];
+
+        // --- STATE MANAGEMENT ---
+        let cartItems = [];
+        let isCartOpen = false;
+        let currentPage = 'home';
+        let selectedProduct = null;
+        let searchTerm = '';
+        let selectedCategory = 'All';
+        let userId = null;
+        let reviews = {};
+        // New state for the product detail page image
+        let currentGalleryImage = null;
+
+        // --- DOM ELEMENTS ---
+        const appContainer = document.getElementById('app-container');
+        const cartModalBackdrop = document.getElementById('cart-modal-backdrop');
+        const cartModal = document.getElementById('cart-modal');
+        const cartButton = document.getElementById('cart-button');
+        const cartItemCount = document.getElementById('cart-item-count');
+        const homeButton = document.getElementById('home-button');
+        const toastContainer = document.getElementById('toast-container');
+        const toastElement = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+
+        // --- UTILITY FUNCTIONS ---
+        
+        // Debounce function to limit how often a function can run
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        // Generate a simple user ID
+        function generateUserId() {
+            return 'user_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // --- LOCAL STORAGE FUNCTIONS for PERSISTENCE ---
+        
+        // Saves the current cart items to localStorage
+        function saveCartToLocalStorage() {
+            try {
+                localStorage.setItem('rosies_cart', JSON.stringify(cartItems));
+            } catch (error) {
+                console.error("Could not save cart to local storage:", error);
+            }
+        }
+        
+        // Loads cart items from localStorage on page load
+        function loadCartFromLocalStorage() {
+            try {
+                const savedCart = localStorage.getItem('rosies_cart');
+                if (savedCart) {
+                    cartItems = JSON.parse(savedCart);
+                }
+            } catch (error) {
+                console.error("Could not load cart from local storage:", error);
+                // Fallback to an empty cart if loading fails
+                cartItems = [];
+            }
+        }
+
+        // Load data from memory (simulating persistence)
+        function loadData() {
+            // In a real app, this would load from localStorage or a database
+            // For this demo, we'll use in-memory storage that resets on page refresh
+            userId = generateUserId();
+            
+            // Initialize some sample reviews
+            reviews = {
+                1: [
+                    { id: 1, user: 'user_abc123', comment: 'Excellent sound quality! Love the long battery life.', timestamp: Date.now() - 86400000 },
+                    { id: 2, user: 'user_def456', comment: 'Very comfortable to wear for hours. Highly recommend!', timestamp: Date.now() - 43200000 }
+                ],
+                2: [
+                    { id: 3, user: 'user_ghi789', comment: 'Makes the perfect cup of coffee every time. The app is intuitive.', timestamp: Date.now() - 172800000 }
+                ],
+                3: [
+                    { id: 4, user: 'user_jkl012', comment: 'Crystal clear 4K display. Great for both work and gaming.', timestamp: Date.now() - 259200000 }
+                ]
+            };
+            
+            // Load the cart from local storage
+            loadCartFromLocalStorage();
+        }
+
+        // Save review to memory 
+        function saveReview(productId, comment) {
+            if (!reviews[productId]) {
+                reviews[productId] = [];
+            }
+            const newReview = {
+                id: Date.now(),
+                user: userId,
+                comment: comment,
+                timestamp: Date.now()
+            };
+            reviews[productId].push(newReview);
+        }
+        
+        // New function to display a subtle toast notification
+        function showToast(message) {
+            // Set the message
+            toastMessage.textContent = message;
+
+            // Make the container visible and animate the toast
+            toastContainer.classList.remove('hidden');
+            setTimeout(() => {
+                toastElement.classList.remove('opacity-0', 'translate-y-full');
+                toastElement.classList.add('opacity-100', 'translate-y-0');
+            }, 10);
+
+            // Hide the toast after 3 seconds
+            setTimeout(() => {
+                toastElement.classList.remove('opacity-100', 'translate-y-0');
+                toastElement.classList.add('opacity-0', 'translate-y-full');
+                setTimeout(() => {
+                    toastContainer.classList.add('hidden');
+                }, 300); // Wait for the transition to finish before hiding container
+            }, 3000);
+        }
+
+        // Updates the cart item count display
+        function updateCartCount() {
+            const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+            if (totalItems > 0) {
+                cartItemCount.textContent = totalItems > 99 ? '99+' : totalItems;
+                cartItemCount.classList.remove('hidden');
+            } else {
+                cartItemCount.classList.add('hidden');
+            }
+        }
+
+        // Toggles the cart modal visibility
+        function toggleCart() {
+            isCartOpen = !isCartOpen;
+            if (isCartOpen) {
+                cartModalBackdrop.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => {
+                    cartModal.classList.remove('translate-x-full');
+                }, 10);
+                renderCart();
+            } else {
+                cartModal.classList.add('translate-x-full');
+                document.body.style.overflow = 'unset';
+                setTimeout(() => {
+                    cartModalBackdrop.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // Adds a product to the cart or increments its quantity
+        function addToCart(product) {
+            const existingItem = cartItems.find(item => item.id === product.id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cartItems.push({ ...product, quantity: 1 });
+            }
+            updateCartCount();
+            // Save the updated cart to localStorage
+            saveCartToLocalStorage();
+            // Show the new toast notification instead of the old modal
+            showToast(`${product.name} added to cart!`);
+        }
+
+        // Handles quantity changes in the cart
+        function handleQuantityChange(productId, change) {
+            cartItems = cartItems.map(item => {
+                if (item.id === productId) {
+                    item.quantity += change;
+                }
+                return item;
+            }).filter(item => item.quantity > 0);
+            updateCartCount();
+            // Save the updated cart to localStorage
+            saveCartToLocalStorage();
+            renderCart();
+        }
+        
+        // Function to start the checkout process (opens the contact form)
+        function handleCheckout() {
+            if (cartItems.length === 0) {
+                showToast('Your cart is empty. Please add items before checking out.', 'error');
+                return;
+            }
+            toggleCart();
+            currentPage = 'checkout-form';
+            render();
+        }
+
+        // Function to handle the form submission and create the mailto link
+        function handleFormSubmission(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('customer-name').value;
+            const email = document.getElementById('customer-email').value;
+            const phone = document.getElementById('customer-phone').value;
+            
+            // Construct the order details for the email body
+            const orderDetails = cartItems.map(item => `${item.quantity}x ${item.name} (R${(item.price * item.quantity).toFixed(2)})`).join('\n');
+            const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+            
+            const emailTo = 'rosey.services@example.com'; // Placeholder email for the store owner
+            const emailSubject = 'New Order from Rosie\'s Online Services';
+            const emailBody = `Hello Rosie's Team,\n\nI would like to place the following order:\n\n--- Customer Information ---\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n--- Order Details ---\n${orderDetails}\n\nTotal: R${cartTotal.toFixed(2)}\n\nPlease process my order. Thank you!`;
+            
+            const encodedSubject = encodeURIComponent(emailSubject);
+            const encodedBody = encodeURIComponent(emailBody);
+            
+            const mailtoUri = `mailto:${emailTo}?subject=${encodedSubject}&body=${encodedBody}`;
+            
+            // Open the email client
+            window.location.href = mailtoUri;
+            
+            // After triggering the mailto, clear the cart and show the confirmation page
+            cartItems = [];
+            // Clear the cart from localStorage as well
+            localStorage.removeItem('rosies_cart');
+            updateCartCount();
+            currentPage = 'order-confirmed';
+            render();
+        }
+
+
+        // Renders the cart modal content
+        function renderCart() {
+            const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+            const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+            let cartContent = `
+                <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900">
+                        Your Cart (${totalItems})
+                    </h2>
+                    <button id="close-cart-button" class="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100" aria-label="Close shopping cart">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div class="p-4 flex-grow overflow-y-auto">
+            `;
+
+            if (cartItems.length === 0) {
+                cartContent += `
+                    <div class="text-center py-12">
+                        <svg class="h-16 w-16 text-gray-300 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        <p class="text-gray-500 text-lg">Your cart is empty</p>
+                        <p class="text-gray-400 text-sm mt-2">Add some products to get started!</p>
+                    </div>
+                `;
+            } else {
+                cartContent += `<div class="space-y-4 mb-6">`;
+                cartItems.forEach(item => {
+                    cartContent += `
+                        <div class="flex items-center space-x-3 bg-gray-50 rounded-lg p-3">
+                            <img src="${item.imageUrl}" alt="${item.name}" class="h-16 w-16 sm:h-20 sm:w-20 object-cover rounded-lg flex-shrink-0" />
+                            <div class="flex-grow min-w-0">
+                                <h4 class="font-semibold text-sm sm:text-base text-gray-800 truncate">${item.name}</h4>
+                                <p class="text-gray-600 text-sm">R${item.price.toFixed(2)}</p>
+                                <div class="flex items-center space-x-2 mt-2">
+                                    <button class="quantity-minus-btn bg-white border border-gray-300 text-gray-700 p-1 rounded-full text-sm font-bold hover:bg-gray-100 transition-colors" data-id="${item.id}" aria-label="Decrease quantity of ${item.name}">
+                                        <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/></svg>
+                                    </button>
+                                    <span class="text-sm font-medium px-2">${item.quantity}</span>
+                                    <button class="quantity-plus-btn bg-white border border-gray-300 text-gray-700 p-1 rounded-full text-sm font-bold hover:bg-gray-100 transition-colors" data-id="${item.id}" aria-label="Increase quantity of ${item.name}">
+                                        <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-bold text-gray-900 text-sm sm:text-base">R${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                cartContent += `</div>`;
+            }
+            cartContent += `</div>
+                <div class="sticky bottom-0 bg-white border-t border-gray-200 pt-4 px-4 pb-4">
+                    <div class="flex justify-between items-center font-bold text-lg sm:text-xl text-gray-900 mb-4">
+                        <span>Total:</span>
+                        <span>R${cartTotal.toFixed(2)}</span>
+                    </div>
+                    <button id="checkout-btn" class="w-full bg-blue-600 text-white rounded-full py-3 sm:py-4 font-bold text-base sm:text-lg transition-all duration-200 hover:bg-blue-700 active:scale-95 shadow-lg ${cartItems.length === 0 ? 'disabled:bg-gray-400 disabled:cursor-not-allowed' : ''}" ${cartItems.length === 0 ? 'disabled' : ''}>
+                        Proceed to Checkout
+                    </button>
+                </div>
+            `;
+            cartModal.innerHTML = cartContent;
+
+            // Add event listeners inside the modal
+            if (cartItems.length > 0) {
+                document.querySelectorAll('.quantity-minus-btn').forEach(button => {
+                    button.addEventListener('click', () => handleQuantityChange(parseInt(button.dataset.id), -1));
+                });
+                document.querySelectorAll('.quantity-plus-btn').forEach(button => {
+                    button.addEventListener('click', () => handleQuantityChange(parseInt(button.dataset.id), 1));
+                });
+                document.getElementById('checkout-btn').addEventListener('click', handleCheckout);
+            }
+            document.getElementById('close-cart-button').addEventListener('click', toggleCart);
+        }
+
+        // --- PAGE RENDERING FUNCTIONS ---
+
+        function renderHomePage() {
+            let filteredProducts = products.filter(product =>
+                (selectedCategory === 'All' || product.category === selectedCategory) &&
+                (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.description.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+
+            let productCardsHtml = '';
+            if (filteredProducts.length > 0) {
+                productCardsHtml = filteredProducts.map(product => `
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transform transition-all duration-200 hover:shadow-xl hover:scale-105 active:scale-100 cursor-pointer fade-in" onclick="handleProductClick(${product.id})">
+                        <div class="relative">
+                            <img src="${product.imageUrl}" alt="${product.name}" class="w-full h-36 sm:h-48 object-cover" />
+                            <div class="absolute top-2 left-2 bg-white bg-opacity-90 rounded-full px-2 py-1 text-xs font-semibold text-gray-700">
+                                ${product.category}
+                            </div>
+                        </div>
+                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
+                            <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2 line-clamp-2">${product.name}</h3>
+                            <p class="text-sm text-gray-600 mb-4 flex-grow line-clamp-3">${product.description}</p>
+                            <div class="mt-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <span class="text-xl sm:text-2xl font-bold text-blue-600">R${product.price.toFixed(2)}</span>
+                                <button class="add-to-cart-btn w-full sm:w-auto bg-green-500 text-white rounded-full px-4 sm:px-5 py-2 sm:py-2 font-bold transition-all duration-200 hover:bg-green-600 active:scale-95 shadow-md" data-product-id="${product.id}" aria-label="Add ${product.name} to cart">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                productCardsHtml = `
+                    <div class="col-span-full text-center py-12">
+                        <svg class="h-16 w-16 text-gray-300 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <p class="text-gray-500 text-lg">No products found</p>
+                        <p class="text-gray-400 text-sm mt-2">Try a different search term or category</p>
+                    </div>
+                `;
+            }
+
+            const categoriesHtml = categories.map(category => `
+                <button
+                    class="px-4 sm:px-6 py-2 rounded-full text-sm font-semibold transition-all duration-200 ${
+                        selectedCategory === category
+                            ? 'bg-blue-600 text-white shadow-md'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }"
+                    onclick="setSelectedCategory('${category}')"
+                    aria-label="Filter products by ${category}"
+                >
+                    ${category}
+                </button>
+            `).join('');
+
+            appContainer.innerHTML = `
+                <!-- Hero Section -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-12 sm:py-16 md:py-24 text-center hero-section">
+                    <div class="container mx-auto px-4">
+                        <h2 class="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-4 leading-tight">
+                            Discover Quality, Persistence & Care
+                        </h2>
+                        <p class="text-sm sm:text-base md:text-lg opacity-90 max-w-2xl mx-auto mb-6 sm:mb-8 px-4">
+                            Shop our curated collection of high-tech gadgets and stylish kitchenware, all designed to make your life easier and more enjoyable.
+                        </p>
+                        <button class="bg-white text-blue-600 font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-full text-base sm:text-lg shadow-lg transition-all duration-300 hover:bg-gray-100 active:scale-95" onclick="document.getElementById('products-section').scrollIntoView({ behavior: 'smooth' })">
+                            Shop Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Main content area for products -->
+                <main class="container mx-auto p-3 sm:p-4 md:p-8">
+                    <!-- Search Bar -->
+                    <div class="flex justify-center mb-6 sm:mb-8">
+                        <div class="relative w-full max-w-lg">
+                            <input
+                                type="text"
+                                placeholder="Search for products..."
+                                class="w-full p-3 sm:p-4 pl-10 sm:pl-12 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm text-sm sm:text-base"
+                                id="search-input"
+                                value="${searchTerm}"
+                                aria-label="Search for products"
+                            />
+                            <svg class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Category Filter Buttons -->
+                    <div class="flex flex-wrap justify-center gap-2 mb-6 sm:mb-8 px-2">
+                        ${categoriesHtml}
+                    </div>
+
+                    <h2 id="products-section" class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 sm:mb-8 text-center">
+                        Featured Products
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 product-grid">
+                        ${productCardsHtml}
+                    </div>
+                </main>
+
+                <!-- Footer -->
+                <footer class="bg-gray-800 text-gray-300 py-8 mt-12">
+                    <div class="container mx-auto px-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div>
+                                <h3 class="text-lg font-bold text-white mb-2">Rosie's</h3>
+                                <p class="text-sm">Quality products delivered with care. Your satisfaction is our top priority.</p>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white mb-2">Quick Links</h3>
+                                <ul class="space-y-1 text-sm">
+                                    <li><a href="#" class="hover:text-white transition-colors duration-200">Home</a></li>
+                                    <li><a href="#" class="hover:text-white transition-colors duration-200">About Us</a></li>
+                                    <li><a href="#" class="hover:text-white transition-colors duration-200">Contact</a></li>
+                                   
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-white mb-2">Contact Us</h3>
+                                <ul class="space-y-1 text-sm">
+                                    <li>Email: <a href="mailto:rosies@safrica.com" class="hover:text-white transition-colors duration-200">rosey.services@example.com</a></li>
+                                    <li>Phone: <a href="tel:+27 79 037 8249" class="hover:text-white transition-colors duration-200">+27 79 037 8249</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-sm">
+                            &copy; 2025 Rosie's Developed by Tac Cyberservices. All rights reserved.
+                        </div>
+                    </div>
+                </footer>
+            `;
+
+            // Add event listeners for the home page
+            document.getElementById('search-input').addEventListener('input', debounce(function() {
+                searchTerm = this.value;
+                render();
+            }, 300));
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const productId = parseInt(e.currentTarget.dataset.productId);
+                    const product = products.find(p => p.id === productId);
+                    
+                    // Add visual feedback
+                    e.currentTarget.textContent = 'Added!';
+                    e.currentTarget.classList.add('bg-gray-500', 'hover:bg-gray-500');
+                    e.currentTarget.disabled = true;
+                    setTimeout(() => {
+                        e.currentTarget.textContent = 'Add to Cart';
+                        e.currentTarget.classList.remove('bg-gray-500', 'hover:bg-gray-500');
+                        e.currentTarget.disabled = false;
+                    }, 1000);
+
+                    addToCart(product);
+                });
+            });
+        }
+
+        function renderProductDetailPage() {
+            if (!selectedProduct) {
+                renderHomePage();
+                return;
+            }
+
+            const product = selectedProduct;
+            const productReviews = reviews[product.id] || [];
+            
+            // Set the initial gallery image if it hasn't been set
+            if (!currentGalleryImage) {
+                currentGalleryImage = product.galleryImages[0];
+            }
+            
+            const galleryThumbnailsHtml = product.galleryImages.map(image => `
+                <img
+                    src="${image}"
+                    alt="Thumbnail of ${product.name}"
+                    class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md cursor-pointer border-2 transition-colors duration-200 ${currentGalleryImage === image ? 'border-blue-600' : 'border-transparent hover:border-blue-300'}"
+                    onclick="setGalleryImage('${image}')"
+                    tabindex="0"
+                    role="button"
+                    aria-label="View product image"
+                />
+            `).join('');
+
+            const productReviewsHtml = productReviews.length > 0 ? productReviews.map(review => `
+                <div class="bg-gray-100 p-4 rounded-lg">
+                    <p class="font-semibold text-gray-800">User: ${review.user}</p>
+                    <p class="text-gray-600 mt-1">${review.comment}</p>
+                    <p class="text-xs text-gray-400 mt-2">${new Date(review.timestamp).toLocaleString()}</p>
+                </div>
+            `).join('') : '<p class="text-gray-500 text-center">No reviews yet. Be the first to leave one!</p>';
+
+            // Find related products (e.g., from the same category, excluding the current product)
+            const relatedProducts = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 3);
+            const relatedProductsHtml = relatedProducts.map(p => `
+                <div class="bg-white rounded-xl shadow-lg p-4 flex flex-col transform transition-all duration-200 hover:shadow-xl hover:scale-105 cursor-pointer" onclick="handleProductClick(${p.id})">
+                    <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-32 object-cover rounded-lg mb-4" />
+                    <h4 class="text-lg font-semibold text-gray-800 mb-1 line-clamp-2">${p.name}</h4>
+                    <p class="text-sm font-bold text-blue-600">R${p.price.toFixed(2)}</p>
+                </div>
+            `).join('') || '<p class="text-gray-500 text-center">No related products found.</p>';
+
+            appContainer.innerHTML = `
+                <div class="container mx-auto p-4 sm:p-6 md:p-8">
+                    <div class="flex items-center space-x-2 text-gray-500 mb-6 cursor-pointer hover:text-blue-600 transition-colors" onclick="goHome()">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                        <span class="text-sm">Back to products</span>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden md:flex md:space-x-8 p-4 sm:p-6 md:p-8 mb-8">
+                        <div class="md:w-1/2 lg:w-2/5 flex-shrink-0">
+                            <!-- Main Image -->
+                            <img id="main-product-image" src="${currentGalleryImage}" alt="${product.name}" class="w-full h-auto rounded-lg object-cover shadow-md mb-4" />
+                            <!-- Gallery Thumbnails -->
+                            <div class="flex space-x-2 justify-center">
+                                ${galleryThumbnailsHtml}
+                            </div>
+                        </div>
+                        <div class="md:w-1/2 lg:w-3/5 mt-6 md:mt-0">
+                            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">${product.name}</h1>
+                            <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full mt-2">${product.category}</span>
+                            <p class="text-3xl font-extrabold text-blue-600 mt-4 sm:mt-6">R${product.price.toFixed(2)}</p>
+                            <p class="text-gray-700 text-base mt-4 leading-relaxed">${product.longDescription}</p>
+                            <button class="add-to-cart-btn-detail w-full sm:w-auto bg-green-500 text-white rounded-full px-6 py-3 font-bold text-lg mt-6 transition-all duration-200 hover:bg-green-600 active:scale-95 shadow-md" data-product-id="${product.id}" aria-label="Add ${product.name} to cart">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Related Products Section -->
+                    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8 mb-8">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 border-b pb-2">Related Products</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            ${relatedProductsHtml}
+                        </div>
+                    </div>
+
+                    <!-- Reviews Section -->
+                    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6 md:p-8">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-4 border-b pb-2">Customer Reviews (${productReviews.length})</h2>
+                        <div class="reviews-container max-h-80 overflow-y-auto space-y-4 pr-2">
+                            ${productReviewsHtml}
+                        </div>
+                        <div class="mt-6">
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Leave a Review</h3>
+                            <form id="review-form">
+                                <textarea id="review-comment" class="w-full h-24 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base" placeholder="Write your review here..." required aria-label="Write your review"></textarea>
+                                <button type="submit" class="mt-3 bg-blue-600 text-white rounded-full px-5 py-2 font-bold transition-all duration-200 hover:bg-blue-700 active:scale-95 shadow-md">
+                                    Submit Review
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add review form submission handler
+            document.getElementById('review-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const comment = document.getElementById('review-comment').value;
+                if (comment.trim() !== '') {
+                    saveReview(product.id, comment);
+                    showToast('Review submitted successfully!');
+                    document.getElementById('review-comment').value = '';
+                    renderProductDetailPage(); // Re-render to show the new review
+                } else {
+                    showToast('Review cannot be empty.', 'error');
+                }
+            });
+
+            // Add event listener for the detail page's Add to Cart button
+            document.querySelector('.add-to-cart-btn-detail').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const productId = parseInt(e.currentTarget.dataset.productId);
+                const product = products.find(p => p.id === productId);
+
+                // Add visual feedback
+                e.currentTarget.textContent = 'Added!';
+                e.currentTarget.classList.add('bg-gray-500', 'hover:bg-gray-500');
+                e.currentTarget.disabled = true;
+                setTimeout(() => {
+                    e.currentTarget.textContent = 'Add to Cart';
+                    e.currentTarget.classList.remove('bg-gray-500', 'hover:bg-gray-500');
+                    e.currentTarget.disabled = false;
+                }, 1000);
+
+                addToCart(product);
+            });
+        }
+        
+        // New function to change the main gallery image
+        function setGalleryImage(imageUrl) {
+            currentGalleryImage = imageUrl;
+            document.getElementById('main-product-image').src = imageUrl;
+            // Re-render thumbnails to update the active border
+            document.querySelectorAll('.thumbnail-image').forEach(img => {
+                if (img.src === imageUrl) {
+                    img.classList.add('border-blue-600');
+                    img.classList.remove('border-transparent');
+                } else {
+                    img.classList.remove('border-blue-600');
+                    img.classList.add('border-transparent');
+                }
+            });
+            // Re-render the entire page to update the thumbnails correctly
+            renderProductDetailPage();
+        }
+
+        function renderCheckoutFormPage() {
+            const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+
+            appContainer.innerHTML = `
+                <div class="container mx-auto p-4 sm:p-6 md:p-8">
+                    <div class="max-w-xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Checkout</h2>
+                        <form id="checkout-form">
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="customer-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                    <input type="text" id="customer-name" name="customer-name" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="customer-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                                    <input type="email" id="customer-email" name="customer-email" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="customer-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                    <input type="tel" id="customer-phone" name="customer-phone" required class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-gray-200">
+                                <p class="text-lg font-bold text-gray-900 flex justify-between items-center">
+                                    <span>Order Total:</span>
+                                    <span>R${cartTotal.toFixed(2)}</span>
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-4 mt-6">
+                                <button type="submit" class="flex-grow bg-blue-600 text-white rounded-full py-3 font-bold text-lg transition-all duration-200 hover:bg-blue-700 active:scale-95 shadow-md">
+                                    Confirm Order
+                                </button>
+                                <button type="button" class="flex-grow bg-gray-200 text-gray-700 rounded-full py-3 font-bold text-lg transition-all duration-200 hover:bg-gray-300 active:scale-95" onclick="goHome()">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.getElementById('checkout-form').addEventListener('submit', handleFormSubmission);
+        }
+        
+        function renderOrderConfirmedPage() {
+            appContainer.innerHTML = `
+                <div class="container mx-auto p-4 sm:p-6 md:p-8">
+                    <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg text-center">
+                        <svg class="h-16 w-16 text-green-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-8.72"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Order Confirmed!</h2>
+                        <p class="text-gray-600 mb-6">Thank you for your purchase. We have received your order request and will be in touch shortly to finalize the details.</p>
+                        <button class="bg-blue-600 text-white rounded-full px-6 py-3 font-bold text-lg transition-all duration-200 hover:bg-blue-700 active:scale-95 shadow-md" onclick="goHome()">
+                            Continue Shopping
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- GLOBAL NAVIGATION AND RENDERING ---
+
+        // Main render function
+        function render() {
+            document.body.classList.add('fade-in');
+            switch (currentPage) {
+                case 'home':
+                    renderHomePage();
+                    break;
+                case 'product-detail':
+                    renderProductDetailPage();
+                    break;
+                case 'checkout-form':
+                    renderCheckoutFormPage();
+                    break;
+                case 'order-confirmed':
+                    renderOrderConfirmedPage();
+                    break;
+                default:
+                    renderHomePage();
+            }
+        }
+
+        // Functions for page navigation
+        function handleProductClick(productId) {
+            selectedProduct = products.find(p => p.id === productId);
+            // Reset the gallery image when a new product is selected
+            currentGalleryImage = null;
+            currentPage = 'product-detail';
+            render();
+        }
+
+        function goHome() {
+            currentPage = 'home';
+            selectedProduct = null;
+            render();
+        }
+
+        function setSelectedCategory(category) {
+            selectedCategory = category;
+            render();
+        }
+        
+        // --- EVENT LISTENERS AND INITIALIZATION ---
+
+        window.onload = () => {
+            loadData();
+            render();
+            updateCartCount();
+
+            // Event listeners for header buttons
+            cartButton.addEventListener('click', toggleCart);
+            cartModalBackdrop.addEventListener('click', (e) => {
+                if (e.target === cartModalBackdrop) {
+                    toggleCart();
+                }
+            });
+            homeButton.addEventListener('click', goHome);
+        };
+    </script>
+
+</body>
+</html>
